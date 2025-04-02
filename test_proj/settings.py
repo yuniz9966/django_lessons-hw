@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # local
-    'first_app.apps.FirstAppConfig'
+    'first_app.apps.FirstAppConfig',
+    "task_manager.apps.TaskManagerConfig",
 ]
 
 
