@@ -17,6 +17,12 @@ class Category(models.Model):
         return self.name
 
 
+    class Meta:
+        db_table = "task_manager_category"
+        verbose_name = "Category"
+        unique_together = ("name",)
+
+
 
 class Task(models.Model):
     title = models.CharField(max_length=50, unique_for_date="deadline")
@@ -30,6 +36,13 @@ class Task(models.Model):
         return self.title
 
 
+    class Meta:
+        db_table = "task_manager_task"
+        verbose_name = "Task"
+        unique_together = ("title",)
+        ordering = ("-created_at",)
+
+
 class SubTask(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
@@ -40,4 +53,11 @@ class SubTask(models.Model):
 
     def __str__(self):
         return self.title
+
+
+    class Meta:
+        db_table = "task_manager_subtask"
+        verbose_name = "SubTask"
+        unique_together = ("title",)
+        ordering = ("-created_at",)
 
