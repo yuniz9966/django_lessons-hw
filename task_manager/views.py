@@ -9,12 +9,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from unicodedata import category
 
-from task_manager.models import Task, SubTask
+from task_manager.models import Task, SubTask, Category
 from task_manager.serializers import (TaskCreateSerialize,
                                       TaskDetailSerializer,
                                       SubTaskCreateSerializer,
-                                      SubTaskSerializer)
+                                      SubTaskSerializer,
+                                      CategoryCreateSerializer)
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
@@ -34,6 +36,34 @@ from task_manager.serializers import (
     SubTaskCreateSerializer,
     SubTaskSerializer
 )
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+
+
+# HW16
+# Задание 1: Реализация CRUD для категорий с использованием ModelViewSet
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategoryCreateSerializer
+
+    @action(detail=False, methods=['get'])
+    def count_tasks(self, request: Request) -> Response:
+        category_statistic = Category.objects.annotate(
+            task_count=Count('task')
+        ) # ).values('id', 'name', 'task_count')
+
+        data = [
+            {
+                "id": c.id,
+                "name": c.name,
+                "task_count": c.task_count,
+            }
+            for c in category_statistic
+        ]
+
+        # return Response(category_statistic)
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 # HW 15
@@ -84,12 +114,6 @@ class SubTaskListCreateView(ListCreateAPIView):
 class SubTaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskSerializer
-
-
-
-
-
-
 
 
 

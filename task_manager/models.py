@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.utils import timezone
+from task_manager.managers.categories import SoftDeleteManager
 
 status_choises = [
         ("New", "New"),
@@ -12,6 +13,16 @@ status_choises = [
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = SoftDeleteManager()
+
+    def delete(self, *args, **kwargs):
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+
+        self.save()
 
     def __str__(self):
         return self.name

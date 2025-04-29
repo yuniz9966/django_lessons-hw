@@ -1,5 +1,6 @@
 import os
 import django
+from unicodedata import category
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_proj.settings')
 django.setup()
@@ -7,9 +8,16 @@ django.setup()
 
 # Задание 1. Создание записей:
 
-from task_manager.models import Task, SubTask
+from task_manager.models import Task, SubTask, Category
 from datetime import datetime, timedelta
 from django.utils import timezone
+
+
+category = Category.objects.bulk_create([
+    Category(name="Auto"),
+    Category(name="Home"),
+    Category(name="Electronics"),
+])
 
 task = Task.objects.create(
     title="Prepare presentation",
@@ -95,7 +103,7 @@ description_subtask.save()
 
 # Задание 4. Удаление записей:
 
-delete_task = Task.objects.get(title="Prepare presentation")
-delete_task.delete()
+# delete_task = Task.objects.get(title="Prepare presentation")
+# delete_task.delete()
 
 
