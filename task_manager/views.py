@@ -39,6 +39,8 @@ from task_manager.serializers import (
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
+from task_manager.paginators import CustomCursorPagination
+
 
 # HW16
 # Задание 1: Реализация CRUD для категорий с использованием ModelViewSet
@@ -46,6 +48,8 @@ from rest_framework.decorators import action
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoryCreateSerializer
+
+    pagination_class = CustomCursorPagination
 
     @action(detail=False, methods=['get'])
     def count_tasks(self, request: Request) -> Response:

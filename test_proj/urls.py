@@ -20,11 +20,11 @@ router.register(r'categories', CategoryViewSet)
 
 
 
-def redirect_to_admin(request):
-    return redirect('/admin/')
+# def redirect_to_admin(request):
+#     return redirect('/admin/')
 
 urlpatterns = [
-    path('', redirect_to_admin),
+    # path('', redirect_to_admin),
     path('admin/', admin.site.urls),
     path('greetings/', django_greetings, name='django_greetings'),
     path('greetings_hello/<str:name>', django_greetings_2),
