@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from environ import Env
+from datetime import timedelta
 
 env = Env()
 
@@ -30,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.str('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -46,6 +47,10 @@ INSTALLED_APPS = [
     # 3-rd party
     'rest_framework',
     'django_filters',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'drf_yasg',
+
     # local
     'first_app.apps.FirstAppConfig',
     "task_manager.apps.TaskManagerConfig",
@@ -128,10 +133,30 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS':
-    'task_manager.paginators.CursorPagination',
+    'DEFAULT_PAGINATION_CLASS': 'task_manager.paginators.CursorPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
 }
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    # 'TOKEN_OBTAIN_SERIALIZER': 'свой путь к новому сериализатору',
+}
+
 
 LOGGING = {
     'version': 1,
