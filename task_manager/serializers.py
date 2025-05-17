@@ -8,20 +8,21 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['title', 'description', 'status', 'deadline']
+        read_only_fields = ['owner']
 
 
 # HW12.  Задание 2: Эндпоинты для получения списка задач и конкретной задачи по её ID
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'status', 'deadline']
-
+        fields = ['title', 'description', 'status', 'deadline', 'owner']
+        read_only_fields = ['owner']
 
 class TaskByIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = "__all__"
-
+        read_only_fields = ['owner']
 
 
 # HW 13
@@ -39,7 +40,8 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
             "deadline",
             "created_at"
         ]
-        read_only_fields = ['created_at',]
+        read_only_fields = ['created_at', 'owner']
+
 
 
 # Задание 2: Переопределение методов create и update
@@ -65,6 +67,7 @@ class SubTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubTask
         fields = "__all__"
+        read_only_fields = ['owner']
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
@@ -74,6 +77,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         model = Task
         fields = "__all__"
         # exclude = ['']  # все поля, кроме...
+        read_only_fields = ['owner']
 
 
 # Задание 4: Валидация данных в сериализаторах
@@ -86,6 +90,7 @@ class TaskCreateSerialize(serializers.ModelSerializer):
             "categories",
             "deadline"
         ]
+        read_only_fields = ['owner']
 
 
     def validate_deadline(self, value: str):

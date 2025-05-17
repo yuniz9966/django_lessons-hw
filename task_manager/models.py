@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from task_manager.managers.categories import SoftDeleteManager
@@ -43,6 +44,8 @@ class Task(models.Model):
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+
     def __str__(self):
         return self.title
 
@@ -61,6 +64,8 @@ class SubTask(models.Model):
     status = models.CharField(max_length=100, choices=status_choises)
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subtasks')
 
     def __str__(self):
         return self.title

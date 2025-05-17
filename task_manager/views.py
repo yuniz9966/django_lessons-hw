@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from unicodedata import category
 
 from task_manager.models import Task, SubTask, Category
+from task_manager.owner_permissions import IsOwnerOrReadOnly
 from task_manager.serializers import (TaskCreateSerialize,
                                       TaskDetailSerializer,
                                       SubTaskCreateSerializer,
@@ -70,6 +71,15 @@ class CategoryViewSet(ModelViewSet):
         # return Response(category_statistic)
         return Response(data=data, status=status.HTTP_200_OK)
 
+# HW19
+class UserTaskListView(ListAPIView):
+    serializer_class = TaskListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(owner=self.request.user)
+
+
 
 # HW 15
 # Задание 1: Замена представлений для задач (Tasks) на Generic Views
@@ -90,11 +100,19 @@ class TaskListCreateView(ListCreateAPIView):
             return TaskCreateSerializer
         return TaskListSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
 
 class TaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = TaskByIDSerializer
 
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 # HW 15
 # Задание 2: Замена представлений для подзадач (SubTasks) на Generic Views
@@ -115,10 +133,18 @@ class SubTaskListCreateView(ListCreateAPIView):
             return SubTaskCreateSerializer
         return SubTaskSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class SubTaskRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskSerializer
+
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 # # HW13
