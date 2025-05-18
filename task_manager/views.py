@@ -1,3 +1,6 @@
+import datetime
+
+from django.contrib.auth import authenticate
 from django.db.models import Count, QuerySet
 from django.db.models.functions import ExtractWeekDay
 from django.http import HttpResponse
@@ -6,19 +9,23 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 from unicodedata import category
 
 from task_manager.models import Task, SubTask, Category
 from task_manager.owner_permissions import IsOwnerOrReadOnly
-from task_manager.serializers import (TaskCreateSerialize,
-                                      TaskDetailSerializer,
-                                      SubTaskCreateSerializer,
-                                      SubTaskSerializer,
-                                      CategoryCreateSerializer)
+from task_manager.serializers import (
+    TaskCreateSerialize,
+    TaskDetailSerializer,
+    SubTaskCreateSerializer,
+    SubTaskSerializer,
+    CategoryCreateSerializer,
+    RegisterUserSerializer
+)
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
@@ -42,6 +49,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 
 from task_manager.paginators import CustomCursorPagination
+from task_manager.utils import set_jwt_cookies
 
 
 # HW16
@@ -78,6 +86,64 @@ class UserTaskListView(ListAPIView):
 
     def get_queryset(self):
         return Task.objects.filter(owner=self.request.user)
+
+
+# HW20
+class LogInAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        user = authenticate(
+            request=request,
+            username=username,
+            password=password
+        )
+
+        if user:
+            response = Response(status=status.HTTP_200_OK)
+
+            set_jwt_cookies(response=response, user=user)
+
+            return response
+
+        else:
+            return Response(
+                data={"message": "Invalid username or password."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+
+class LogOutAPIView(APIView):
+    def post(self, request):
+        response = Response(status=status.HTTP_200_OK)
+
+        response.delete_cookie(key='access_token')
+        response.delete_cookie(key='refresh_token')
+
+        return response
+
+
+class RegisterUserAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request: Request) -> Response:
+        serializer = RegisterUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        response = Response(
+            data=serializer.data,
+            status=status.HTTP_201_CREATED
+        )
+
+        set_jwt_cookies(response, user)
+
+        return response
+
+
 
 
 

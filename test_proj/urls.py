@@ -10,6 +10,9 @@ from task_manager.views import (
     SubTaskListCreateView,
     SubTaskRetrieveUpdateDestroyView,
     UserTaskListView,
+    LogInAPIView,
+    LogOutAPIView,
+    RegisterUserAPIView,
 )
 from rest_framework.routers import DefaultRouter
 from task_manager.views import CategoryViewSet
@@ -61,6 +64,11 @@ urlpatterns = [
     path('', include(router.urls)),
 
     path('auth-login-jwt/', TokenObtainPairView.as_view()),
+
+    path('auth-login/', LogInAPIView.as_view()),
+    path('auth-logout/', LogOutAPIView.as_view()),
+    path('auth-register/', RegisterUserAPIView.as_view()),
+
     path('token-refresh/', TokenRefreshView.as_view()),
 
     path('user-task/', UserTaskListView.as_view(), name='user-task'),
