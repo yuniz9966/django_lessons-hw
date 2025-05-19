@@ -2,9 +2,9 @@ import re
 
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from rest_framework.authtoken.admin import User
+# from rest_framework.authtoken.admin import User
 
-from task_manager.models import Task, SubTask, Category
+from task_manager.models import Task, SubTask, Category, User
 from django.utils import timezone
 
 
@@ -16,7 +16,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         choices=[
             ("ADMIN", "ADMIN"),
             ("MODERATOR", "MODERATOR"),
-            ("LIB MEMBER", "LIB MEMBER"),
+            ("USER", "USER"),
         ],
         required=False,
     )
